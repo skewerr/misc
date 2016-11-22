@@ -94,7 +94,7 @@ fun_dict = {
 
 # read the first argument, try to open it as a file
 with open(sys.argv[1], "r") as inf:
-	ins_tape = inf.read().replace('\n', '')
+	ins_tape = ''.join([c for c in inf.read() if c in fun_dict.keys()])
 
 # getting characters from a string
 def ins_prep(indx, offset):
@@ -118,7 +118,7 @@ while ins_indx < len(ins_tape):
 	old_indx = ins_indx
 
 	# using our function dict
-	ins_indx = fun_dict.get(op_c, lambda _:_+1)(ins_indx)
+	ins_indx = fun_dict[op_c](ins_indx)
 
 	print("\033[1;1H", end="")
 	print("  Output:", out_str.replace('\n', "\\n"))
