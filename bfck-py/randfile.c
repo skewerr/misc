@@ -35,7 +35,7 @@ main(void)
 	{
 		op = c[rand() % strlen(c)];
 
-		while (op == ']' && cnd - length < 8)
+		while (op == ']' && cnt - length < 8)
 			op = c[rand() % strlen(c)];
 
 		if (op == '[')
