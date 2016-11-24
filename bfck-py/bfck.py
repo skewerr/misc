@@ -85,7 +85,6 @@ def print_char(_):
 	global out_str
 
 	out_str += chr(dat_tape[dat_indx])
-#	print(chr(dat_tape[dat_indx]), end='')
 
 	return _ + 1
 
