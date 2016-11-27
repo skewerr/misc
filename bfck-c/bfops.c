@@ -5,23 +5,23 @@
 
 #include "bfops.h"
 
-unsigned long *loop_arr;
-unsigned int loop_iter;
-unsigned int loop_cnt;
+long  	*loop_arr;
+size_t	loop_iter;
+size_t	loop_cnt;
 
-int *cell_arr;
-int *curr_pnt;
-unsigned int cell_cnt;
+uint8_t	*cell_arr;
+uint8_t	*curr_pnt;
+size_t 	cell_cnt;
 
-char out_str[512];
-unsigned int out_iter;
+char  	out_str[512];
+size_t	out_iter;
 
 void
 init_arrays(void)
 {
 	/* TODO: memory tests */
-	cell_arr = calloc(10, sizeof(int));
-	loop_arr = malloc(5 * sizeof(unsigned long));
+	cell_arr = calloc(10);
+	loop_arr = malloc(5 * sizeof(long));
 
 	curr_pnt = cell_arr;
 	cell_cnt = 10;
@@ -116,7 +116,7 @@ start_loop(void)
 	{
 		/* TODO: memory tests */
 		loop_cnt += 5;
-		loop_arr = realloc(loop_arr, loop_cnt * sizeof(unsigned long));
+		loop_arr = realloc(loop_arr, loop_cnt * sizeof(long));
 	}
 
 	*(loop_arr + loop_iter++) = ftell(fstream);
@@ -159,7 +159,7 @@ inc_pntr(void)
 	{
 		/* TODO: memory tests */
 		cell_cnt += 8;
-		cell_arr = realloc(cell_arr, cell_cnt * sizeof(int));
+		cell_arr = realloc(cell_arr, cell_cnt);
 		curr_pnt = cell_arr + cell_cnt - 6;
 
 		memset(curr_pnt + 1, 0, 8);
