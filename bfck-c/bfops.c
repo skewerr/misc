@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "bfops.h"
+#include "bfmisc.h"
 
 long  	*loop_arr;
 size_t	loop_iter;
@@ -20,7 +22,7 @@ void
 init_arrays(void)
 {
 	/* TODO: memory tests */
-	cell_arr = calloc(10);
+	cell_arr = calloc(10, 1);
 	loop_arr = malloc(5 * sizeof(long));
 
 	curr_pnt = cell_arr;
@@ -51,42 +53,7 @@ interpret(const char op)
 			return;
 	}
 
-	offset = curr_pnt - cell_arr;
-
-	/* clean newlines in output */
-	for (i = 0; out_str[i] != '\0'; i++)
-	{
-		if (out_str[i] == '\n')
-		{
-			out_str[i++] = '\\';
-			out_str[i] = 'n';
-			out_iter++;
-		}
-	}
-
-	printf("\033[1;1H");
-	printf("Output: %s\n", out_str);
-	printf("Cell #:\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\n",
-		offset-4, offset-3, offset-2, offset-1, offset,
-		offset+1, offset+2, offset+3, offset+4);
-	printf("Cell V:\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\n",
-		(offset-4 >= 0) ? *(cell_arr + offset-4):0,
-		(offset-3 >= 0) ? *(cell_arr + offset-3):0,
-		(offset-2 >= 0) ? *(cell_arr + offset-2):0,
-		(offset-1 >= 0) ? *(cell_arr + offset-1):0,
-		*(cell_arr + offset  ),
-		*(cell_arr + offset+1),
-		*(cell_arr + offset+2),
-		*(cell_arr + offset+3),
-		*(cell_arr + offset+4));
-	printf("Point: \t   \t   \t   \t   \t  ^\n");
-	printf("Oper:  \t  %c\n\n", op);
-	printf("loop_cnt: %d\n", loop_cnt);
-	printf("loop_iter: %d\n", loop_iter);
-	printf("cell_cnt: %d\n", cell_cnt);
-	printf("out_iter: %d\n\n", out_iter);
-
-	usleep(20000); /* obsolete, but the alternative is ugly, ngl */
+	print_output(op);
 }
 
 /* character IO */
@@ -94,11 +61,15 @@ interpret(const char op)
 void
 read_char(void)
 {
-	if ((*curr_pnt = fgetc(stdin)) == EOF)
+	int c;
+
+	if ((c = fgetc(stdin)) == EOF)
 	{
 		printf("EOF found on stdin. (Exiting...)\n");
 		exit(EXIT_SUCCESS);
 	}
+	else
+		*curr_pnt = c;
 }
 
 void
