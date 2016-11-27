@@ -5,7 +5,7 @@
 
 #include "bfops.h"
 
-unsigned long *loop_sets;
+unsigned long *loop_arr;
 unsigned int loop_iter;
 unsigned int loop_cnt;
 
@@ -13,7 +13,7 @@ int *cell_arr;
 int *curr_pnt;
 unsigned int cell_cnt;
 
-char output[512];
+char out_str[512];
 unsigned int out_iter;
 
 void
@@ -21,19 +21,19 @@ init_arrays(void)
 {
 	/* TODO: memory tests */
 	cell_arr = calloc(10, sizeof(int));
-	loop_sets = malloc(5 * sizeof(unsigned long));
+	loop_arr = malloc(5 * sizeof(unsigned long));
 
 	curr_pnt = cell_arr;
 	cell_cnt = 10;
 	loop_cnt = 5;
 
-	memset(output, 0, 512);
+	memset(out_str, 0, 512);
 }
 
 void
 free_arrays(void)
 {
-	free(loop_sets); loop_sets = NULL;
+	free(loop_arr); loop_arr = NULL;
 	free(cell_arr); cell_arr = NULL;
 }
 
@@ -61,18 +61,18 @@ interpret(const char op)
 	offset = curr_pnt - cell_arr;
 
 	/* clean newlines in output */
-	for (i = 0; output[i] != '\0'; i++)
+	for (i = 0; out_str[i] != '\0'; i++)
 	{
-		if (output[i] == '\n')
+		if (out_str[i] == '\n')
 		{
-			output[i++] = '\\';
-			output[i] = 'n';
+			out_str[i++] = '\\';
+			out_str[i] = 'n';
 			out_iter++;
 		}
 	}
 
 	printf("\033[1;1H");
-	printf("Output: %s\n", output);
+	printf("Output: %s\n", out_str);
 	printf("Cell #:\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\t%3d\n",
 		offset-4, offset-3, offset-2, offset-1, offset,
 		offset+1, offset+2, offset+3, offset+4);
@@ -111,7 +111,7 @@ read_char(void)
 void
 print_char(void)
 {
-	output[out_iter++] = *curr_pnt;
+	out_str[out_iter++] = *curr_pnt;
 }
 
 /* loop magic */
@@ -123,17 +123,17 @@ start_loop(void)
 	{
 		/* TODO: memory tests */
 		loop_cnt += 5;
-		loop_sets = realloc(loop_sets, loop_cnt * sizeof(unsigned long));
+		loop_arr = realloc(loop_arr, loop_cnt * sizeof(unsigned long));
 	}
 
-	*(loop_sets + loop_iter++) = ftell(fstream);
+	*(loop_arr + loop_iter++) = ftell(fstream);
 }
 
 void
 end_loop(void)
 {
 	if (*curr_pnt)
-		fseek(fstream, *(loop_sets + loop_iter-1), SEEK_SET);
+		fseek(fstream, *(loop_arr + loop_iter-1), SEEK_SET);
 	else if (loop_iter)
 		loop_iter--;
 	else
