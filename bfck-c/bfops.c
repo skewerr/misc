@@ -31,13 +31,6 @@ init_arrays(void)
 }
 
 void
-free_arrays(void)
-{
-	free(loop_arr); loop_arr = NULL;
-	free(cell_arr); cell_arr = NULL;
-}
-
-void
 interpret(const char op)
 {
 	int offset;
