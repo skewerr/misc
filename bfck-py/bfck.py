@@ -57,7 +57,22 @@ def dec_pntr(_):
 # start/end loop
 def start_loop(indx):
 
-	lop_tape.append(indx + 1)
+	if dat_tape[dat_indx] != 0:
+		lop_tape.append(indx + 1)
+
+		return indx + 1
+	else:
+		indx = close_loop(indx)
+
+		return indx
+
+def close_loop(indx):
+
+	while ins_tape[indx] != ']':
+		indx += 1
+
+		if ins_tape[indx] == '[':
+			indx = close_loop(indx)
 
 	return indx + 1
 
@@ -109,10 +124,10 @@ def ins_prep(indx, offset):
 	while not prep_str:
 		ch_offset -= 1
 		prep_str = ins_tape[indx - ch_offset:indx]
-	
+
 	while len(prep_str) != offset:
 		prep_str = " " + prep_str
-	
+
 	return prep_str
 
 # read the first argument, try to open it as a file
@@ -129,30 +144,31 @@ while ins_indx < len(ins_tape):
 	ins_indx = fun_dict[op_c](ins_indx)
 
 	print("\033[1;1H", end="")
-	print("   Cells:", ' '.join(["{:3d}".format(_) for _ in dat_tape]))
-	print(" Pointer:", "    " * dat_indx, " ^", " " * 20)
-	print("Operator:", op_c)
 
-	# rewind the tape if we're caught by the loop
-	# `and ins_indx != old_indx` takes care of infinite loops
-	if ins_indx < old_indx + 1 and ins_indx != old_indx:
+	print(" Program:", ins_prep(ins_indx, 35), "\033[31m" +
+		(ins_tape[ins_indx] if ins_indx < len(ins_tape) else "HALT") + "\033[0m",
+		ins_tape[ins_indx+1:ins_indx+36].ljust(32))
+
+	print("   Cells:", ' '.join(["{:3d}".format(_) for _ in dat_tape]))
+	print(" Pointer:", "    " * dat_indx, " ^", " " * 4)
+
+	print("  Output:", out_str.replace("\n", "\n        : "))
+
+	# rewind/forward the tape if we're caught by a loop
+	if abs(ins_indx - old_indx) != 1:
 
 		while old_indx != ins_indx:
 
-			old_indx -= 1
-			print("\033[4;1H", end="")
+			old_indx += 1 if ins_indx > old_indx else -1
+
+			print("\033[1;1H", end="")
+
 			print(" Program:", ins_prep(old_indx, 35), "\033[34m" +
-				ins_tape[old_indx] + "\033[0m",
+				(ins_tape[old_indx] if old_indx < len(ins_tape) else "HALT") + "\033[0m",
 				ins_tape[old_indx+1:old_indx+36].ljust(35))
 
+			print("\033[%d;1H" % (4 + len([_ for _ in out_str if _ == '\n'])), end="")
+
 			time.sleep(p_sleep)
-
 	else:
-
-		print(" Program:", ins_prep(ins_indx, 35), "\033[31m" +
-			(ins_tape[ins_indx] if ins_indx < len(ins_tape) else "HALT") + "\033[0m",
-			ins_tape[ins_indx+1:ins_indx+36].ljust(35))
-
-		print("  Output:", out_str.replace('\n', "\\n"))
-
 		time.sleep(p_sleep)
