@@ -2,15 +2,31 @@
 
 import sys
 import time
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument("file", help = "Path to a brainfuck script/program.")
+
+parser.add_argument("-s", "--sleep", default = 0.03, type = float,
+	help = "Sleep (in seconds) between each loop iteration.")
+parser.add_argument("-q", "--quiet", action = "store_true",
+	help = "Don't prettify output (or sleep).")
+parser.add_argument("--hide-cells", action = "store_true",
+	help = "Hide cells from output. Necessary if a program uses a lot of cells.")
+
+args = parser.parse_args()
+
+out_str  = ""            	# output string
 ins_tape = ""            	# instructions tape
 lop_tape = []            	# loop indexes tape
 dat_tape = bytearray([0])	# data tape
 dat_indx = 0             	# data index (will be used as pointer)
 ins_indx = 0             	# instruction index
 
-out_str = ""  	# output string
-p_sleep = 0.03	# loop sleep
+filename = args.file
+p_sleep  = args.sleep
+o_quiet  = args.quiet
+o_cells  = args.hide_cells
 
 # increment/decrement current cell value
 def inc_cell(_):
@@ -99,7 +115,10 @@ def print_char(_):
 
 	global out_str
 
-	out_str += chr(dat_tape[dat_indx])
+	if o_quiet:
+		print(chr(dat_tape[dat_indx]), end="")
+	else:
+		out_str += chr(dat_tape[dat_indx])
 
 	return _ + 1
 
@@ -131,7 +150,7 @@ def ins_prep(indx, offset):
 	return prep_str
 
 # read the first argument, try to open it as a file
-with open(sys.argv[1], "r") as inf:
+with open(filename, "r") as inf:
 	ins_tape = ''.join([c for c in inf.read() if c in fun_dict.keys()])
 
 # let's go through the instructions, now
@@ -143,19 +162,23 @@ while ins_indx < len(ins_tape):
 	# using our function dict
 	ins_indx = fun_dict[op_c](ins_indx)
 
+	if o_quiet:
+		continue
+
 	print("\033[1;1H", end="")
 
 	print(" Program:", ins_prep(ins_indx, 35), "\033[31m" +
 		(ins_tape[ins_indx] if ins_indx < len(ins_tape) else "HALT") + "\033[0m",
 		ins_tape[ins_indx+1:ins_indx+36].ljust(32))
 
-	print("   Cells:", ' '.join(["{:3d}".format(_) for _ in dat_tape]))
-	print(" Pointer:", "    " * dat_indx, " ^", " " * 4)
+	if not o_cells:
+		print("   Cells:", ' '.join(["{:3d}".format(_) for _ in dat_tape]))
+		print(" Pointer:", "    " * dat_indx, " ^", " " * 4)
 
 	print("  Output:", out_str.replace("\n", "\n        : "))
 
 	# rewind/forward the tape if we're caught by a loop
-	if abs(ins_indx - old_indx) != 1:
+	if abs(ins_indx - old_indx) != 1 and ins_indx < len(ins_tape):
 
 		while old_indx != ins_indx:
 
@@ -164,7 +187,7 @@ while ins_indx < len(ins_tape):
 			print("\033[1;1H", end="")
 
 			print(" Program:", ins_prep(old_indx, 35), "\033[34m" +
-				(ins_tape[old_indx] if old_indx < len(ins_tape) else "HALT") + "\033[0m",
+				ins_tape[old_indx] + "\033[0m",
 				ins_tape[old_indx+1:old_indx+36].ljust(35))
 
 			print("\033[%d;1H" % (4 + len([_ for _ in out_str if _ == '\n'])), end="")
