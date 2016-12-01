@@ -18,13 +18,15 @@
  * I made it start at 0 because I feared random values could interfere with the
  * first few characters, but that might not be the case and it's a useless
  * assignment. Meh.
+ *
+ * I then added `int lcnt;` so that every loop would be closed.
  */
 
 int
 main(void)
 {
 	const char *c = "+-,.[]<>";
-	int length, cnt = 0;
+	int length, cnt = 0, lcnt = 0;
 	char op;
 
 	srand(time(NULL));
@@ -39,10 +41,16 @@ main(void)
 			op = c[rand() % strlen(c)];
 
 		if (op == '[')
+		{
 			cnt = length;
+			++lcnt;
+		}
 
 		putchar(op);
 	}
+
+	for (; lcnt; --lcnt)
+		putchat(']');
 
 	return EXIT_SUCCESS;
 }
