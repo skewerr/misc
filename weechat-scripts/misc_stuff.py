@@ -4,7 +4,7 @@
 
 SCRIPT_NAME   	= "misc_stuff"
 SCRIPT_AUTHOR 	= "Wilson <spoonm@spoonm.org>"
-SCRIPT_VERSION	= "0.1"
+SCRIPT_VERSION	= "0.2"
 SCRIPT_LICENSE	= "WTFPL"
 SCRIPT_DESC   	= "Tricks and dirty hacks."
 
@@ -24,10 +24,8 @@ def bufname(data, buffer, args):
 	Only useful in my personal setup.
 	"""
 
-	b = weechat.current_buffer()
-	bname = weechat.buffer_get_string(b, "name")
-
-	weechat.buffer_set(b, "input", bname)
+	weechat.buffer_set(buffer, "input",
+		weechat.buffer_get_string(buffer, "name"))
 
 	return weechat.WEECHAT_RC_OK
 
