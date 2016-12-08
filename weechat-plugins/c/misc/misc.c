@@ -57,7 +57,7 @@ command_decide_cb(const void *pointer, void *data,
 	}
 
 	c_dup    = strdup(argv_eol[1]);
-	c_arr[0] = strtok(c_dup, "|");
+	c_arr[0] = strtok(c_dup, "| ");
 
 	while((c_tok = strtok(NULL, "| ")) != NULL)
 		c_arr[c_num++] = c_tok;
