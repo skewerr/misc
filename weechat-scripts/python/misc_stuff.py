@@ -13,6 +13,7 @@ import_ok = True
 try:
 	import weechat
 	import random
+	import time
 except ImportError:
 	print("This script must be run from within weechat.")
 	import_ok = False
