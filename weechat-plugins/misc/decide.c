@@ -28,7 +28,7 @@ static const char *c_fallback[] = {
 };
 
 static const char *c_delim[] = {
-	" | ",
+	"|",
 	" or ",
 	", "
 };
@@ -87,22 +87,22 @@ compile_list(const char **list)
 	const char *haystack = c_duplicate;
 	const char *delim = NULL;
 	char *needle = NULL;
-	int c_num = 1;
-	int d_len;
+	int delim_length;
+	int count = 1;
 
 	list[0] = c_duplicate;
 
 	if ((delim = choose_delim()) == NULL)
 		return 1;
 
-	d_len = strlen(delim);
+	delim_length = strlen(delim);
 
 	while((needle = strstr(haystack, delim)) != NULL)
 	{
 		*needle = '\0';
-		haystack = needle + d_len;
-		list[c_num++] = haystack;
+		haystack = needle + delim_length;
+		list[count++] = haystack;
 	}
 
-	return c_num;
+	return count;
 }
