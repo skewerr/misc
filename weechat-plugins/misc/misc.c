@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "weechat-plugin.h"
 #include "misc.h"
@@ -20,6 +21,8 @@ weechat_plugin_init(struct t_weechat_plugin *plugin,
 	int argc, char **argv)
 {
 	weechat_plugin = plugin;
+
+	srand(time(NULL));
 
 	weechat_hook_command("bufname",
 		"display the name of the current buffer in the input line",
