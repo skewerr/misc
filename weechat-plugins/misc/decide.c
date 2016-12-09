@@ -18,7 +18,6 @@ static const char *choose_delim(void);
 static int compile_list(const char **);
 
 static char *c_duplicate; /* global variable => NULL */
-static char *c_token;     /* global variable => NULL */
 static char *c_result;    /* global variable => NULL */
 
 static const char *c_fallback[] = {
