@@ -53,7 +53,7 @@ command_decide_cb(const void *pointer, void *data,
 	weechat_buffer_set(buffer, "input", c_result);
 
 	free(c_duplicate); free(c_result);
-	c_result = c_duplicate = c_token = NULL;
+	c_result = c_duplicate = NULL;
 
 	return WEECHAT_RC_OK;
 }
