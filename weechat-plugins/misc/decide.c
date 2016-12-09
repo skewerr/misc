@@ -13,6 +13,10 @@
 
 #define LEN(A) (sizeof(A)/sizeof(A[0]))
 
+/* proto */
+static const char *choose_delim(void);
+static int compile_list(const char **);
+
 static char *c_duplicate; /* global variable => NULL */
 static char *c_token;     /* global variable => NULL */
 static char *c_result;    /* global variable => NULL */
@@ -23,13 +27,19 @@ static const char *c_fallback[] = {
 	"no"
 };
 
+static const char *c_delim[] = {
+	" | ",
+	" or ",
+	", "
+};
+
 int
 command_decide_cb(const void *pointer, void *data,
 	struct t_gui_buffer *buffer,
 	int argc, char **argv, char **argv_eol)
 {
 	const char *c_array[argc - 1];
-	int c_num = 1;
+	int c_num;
 
 	if (argc == 1)
 	{
@@ -40,10 +50,7 @@ command_decide_cb(const void *pointer, void *data,
 	}
 
 	c_duplicate = strdup(argv_eol[1]);
-	c_array[0]  = strtok(c_duplicate, "|");
-
-	while((c_token = strtok(NULL, "|")) != NULL)
-		c_array[c_num++] = c_token;
+	c_num       = compile_list(c_array);
 
 	c_result = weechat_string_strip(((c_num > 1) ?
 		c_array[rand() % c_num] :
@@ -56,4 +63,46 @@ command_decide_cb(const void *pointer, void *data,
 	c_result = c_duplicate = NULL;
 
 	return WEECHAT_RC_OK;
+}
+
+static const char *
+choose_delim(void)
+{
+	const char *needle = NULL;
+	int i;
+
+	for (i = 0; i < LEN(c_delim); ++i)
+	{
+		if ((needle = strstr(c_duplicate, c_delim[i])) != NULL &&
+			*(needle + strlen(c_delim[i])) != '\0')
+			return c_delim[i];
+	}
+
+	return NULL;
+}
+
+static int
+compile_list(const char **list)
+{
+	const char *haystack = c_duplicate;
+	const char *delim = NULL;
+	char *needle = NULL;
+	int c_num = 1;
+	int d_len;
+
+	list[0] = c_duplicate;
+
+	if ((delim = choose_delim()) == NULL)
+		return 1;
+
+	d_len = strlen(delim);
+
+	while((needle = strstr(haystack, delim)) != NULL)
+	{
+		*needle = '\0';
+		haystack = needle + d_len;
+		list[c_num++] = haystack;
+	}
+
+	return c_num;
 }
