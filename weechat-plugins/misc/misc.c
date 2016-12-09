@@ -30,8 +30,8 @@ weechat_plugin_init(struct t_weechat_plugin *plugin,
 
 	weechat_hook_command("decide",
 		"make a random decision using stdlib's rand()",
-		"op1 | op2 | ...\n"
-		"op1 or op2 or ...\n"
+		"op1 | op2 | ... || "
+		"op1 or op2 or ... || "
 		"op1, op2, ...", NULL, NULL, &command_decide_cb, NULL, NULL);
 
 	return WEECHAT_RC_OK;
