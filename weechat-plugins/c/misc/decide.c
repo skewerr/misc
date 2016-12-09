@@ -15,6 +15,7 @@
 
 static char *c_duplicate; /* global variable => NULL */
 static char *c_token;     /* global variable => NULL */
+static char *c_result;    /* global variable => NULL */
 
 static const char *c_fallback[] = {
 	"yes",
@@ -39,17 +40,20 @@ command_decide_cb(const void *pointer, void *data,
 	}
 
 	c_duplicate = strdup(argv_eol[1]);
-	c_array[0]  = strtok(c_duplicate, "| ");
+	c_array[0]  = strtok(c_duplicate, "|");
 
-	while((c_token = strtok(NULL, "| ")) != NULL)
+	while((c_token = strtok(NULL, "|")) != NULL)
 		c_array[c_num++] = c_token;
 
-	weechat_buffer_set(buffer, "input", ((c_num > 1) ?
+	c_result = weechat_string_strip(((c_num > 1) ?
 		c_array[rand() % c_num] :
-		c_fallback[rand() % LEN(c_fallback)]));
+		c_fallback[rand() % LEN(c_fallback)]),
+		1, 1, " ");
 
-	free(c_duplicate);
-	c_duplicate = c_token = NULL;
+	weechat_buffer_set(buffer, "input", c_result);
+
+	free(c_duplicate); free(c_result);
+	c_result = c_duplicate = c_token = NULL;
 
 	return WEECHAT_RC_OK;
 }
