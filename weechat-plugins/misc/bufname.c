@@ -1,9 +1,3 @@
-/* bufname.c
- *
- * Contains functions responsible for the command /bufname, most important of
- * which is the command callback, `command_bufname_cb`.
- */
-
 #include <stdlib.h>
 
 #include "weechat-plugin.h"

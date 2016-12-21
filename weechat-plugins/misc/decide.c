@@ -1,9 +1,3 @@
-/* decide.c
- *
- * Contains functions responsible for the /decide command, most important of
- * which is the command callback, `command_decide_cb`.
- */
-
 #include <stdlib.h>
 #include <string.h>
 
