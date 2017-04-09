@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
 
 const char *FILENAME = "/home/spoonm/.local/share/todo/todolist";
 const char *FILECOPY = "/home/spoonm/.local/share/todo/.todolist.tmp";
