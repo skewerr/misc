@@ -13,11 +13,11 @@ void
 todo_addline(const char *line)
 {
 	fp = fopen(FILENAME, "a");
+
 	fputs(line, fp);
 	fputc('\n', fp);
 
-	fclose(fp);
-	fp = NULL;
+	fclose(fp); fp = NULL;
 }
 
 void
@@ -52,6 +52,8 @@ todo_list(void)
 
 	for (i = 0; fgets(buf, sizeof buf, fp); ++i)
 		printf("%d %s", i, buf);
+
+	fclose(fp); fp = NULL;
 }
 
 int
