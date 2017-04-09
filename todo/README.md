@@ -8,10 +8,10 @@ A simple program to manage a todo list, separated by lines, like this:
 There are some things to take into consideration:
 
 - I'm using 512 bytes long buffers for each line, meaning the program function
-  properly for lines up to 510 characters (`'\n'` and `\0` come at the end).
+  properly for lines up to 510 characters (`'\n'` and `'\0'` come at the end).
 - Unlike the script I wrote in Python(not in this repo, too ugly), it doesn't
   support long options like `--add`, `--delete`, etc. I opted not to use
-  `getopt_long()` for brevity.
+  `getopt_long()` for brevity. It also doesn't support `-h` or `--help`.
 - There's no reading environment variables, as would be necessary for XDG
   compliance. This isn't a script I made thinking of other people using it. It's
   just something I'm putting here for future reference or in case anyone feels
