@@ -1,151 +1,100 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
 #include "bfops.h"
-#include "bfmisc.h"
 
-long  	*loop_arr;
-size_t	loop_iter;
-size_t	loop_cnt;
+static char *celllist;
+static char *currentcell;
+static int  cellcount;
 
-uint8_t	*cell_arr;
-uint8_t	*curr_pnt;
-size_t 	cell_cnt;
-
-char  	out_str[512];
-size_t	out_iter;
+static long *seekstack;
+static int  seekcount;
+static int  seektop;
 
 void
-init_arrays(void)
+bfops_init(void)
 {
-	/* TODO: memory tests */
-	cell_arr = calloc(10, 1);
-	loop_arr = malloc(5 * sizeof(long));
+	/* TODO: alloc error checking */
+	celllist = calloc(10, 1);
+	currentcell = celllist;
+	cellcount = 10;
 
-	curr_pnt = cell_arr;
-	cell_cnt = 10;
-	loop_cnt = 5;
-
-	memset(out_str, 0, 512);
+	seekstack = malloc(5);
+	seekcount = 5;
+	seektop = 0;
 }
 
 void
-interpret(const char op)
+bfops_inc(void)
 {
-	int offset;
-	int i;
-
-	switch (op)
-	{
-		case '+': inc_cell();  	break;
-		case '-': dec_cell();  	break;
-		case '>': inc_pntr();  	break;
-		case '<': dec_pntr();  	break;
-		case '[': start_loop();	break;
-		case ']': end_loop();  	break;
-		case '.': print_char();	break;
-		case ',': read_char(); 	break;
-
-		default:
-			return;
-	}
-
-	print_output(op);
-}
-
-/* character IO */
-
-void
-read_char(void)
-{
-	int c;
-
-	if ((c = fgetc(stdin)) == EOF)
-	{
-		printf("EOF found on stdin. (Exiting...)\n");
-		exit(EXIT_SUCCESS);
-	}
-	else
-		*curr_pnt = c;
+	++(*currentcell);
 }
 
 void
-print_char(void)
+bfops_dec(void)
 {
-	out_str[out_iter++] = *curr_pnt;
-}
-
-/* loop magic */
-
-void
-start_loop(void)
-{
-	if (loop_iter == loop_cnt - 1)
-	{
-		/* TODO: memory tests */
-		loop_cnt += 5;
-		loop_arr = realloc(loop_arr, loop_cnt * sizeof(long));
-	}
-
-	*(loop_arr + loop_iter++) = ftell(fstream);
+	--(*currentcell);
 }
 
 void
-end_loop(void)
+bfops_next(void)
 {
-	if (*curr_pnt)
-		fseek(fstream, *(loop_arr + loop_iter-1), SEEK_SET);
-	else if (loop_iter)
-		loop_iter--;
-	else
-	{
-		printf("[ERROR] Attempt to end unstarted loop.\n");
-		exit(EXIT_FAILURE);
+	if (++currentcell - celllist >= cellcount) {
+		/* TODO: alloc error checking */
+		celllist = realloc(celllist, cellcount + 5);
+		currentcell = celllist + cellcount;
+		cellcount += 5;
+
+		memset(currentcell, 0, 5);
 	}
 }
 
-/* cell arithmetic */
-
 void
-inc_cell(void)
+bfops_prev(void)
 {
-	(*curr_pnt)++;
+	if (--currentcell < celllist) {
+		fprintf(stderr, "Attempt to go to cell -1.\n");
+		exit(1);
+	}
 }
 
 void
-dec_cell(void)
+bfops_print(void)
 {
-	(*curr_pnt)--;
+	putchar(*currentcell);
 }
 
-/* pointer mangling */
+void
+bfops_read(void)
+{
+	*currentcell = getchar();
+}
 
 void
-inc_pntr(void)
+bfops_startloop(void)
 {
-	if ((curr_pnt - cell_arr) == cell_cnt - 4)
-	{
-		/* TODO: memory tests */
-		cell_cnt += 8;
-		cell_arr = realloc(cell_arr, cell_cnt);
-		curr_pnt = cell_arr + cell_cnt - 6;
-
-		memset(curr_pnt + 1, 0, 8);
+	if (*currentcell == 0) {
+		looplock = 1;
+		return;
 	}
 
-	curr_pnt++;
+	seekstack[seektop++] = ftell(bffp);
+
+	if (seektop >= seekcount) {
+		/* TODO: alloc error check */
+		seekstack = realloc(seekstack, seekcount + 5);
+		seekcount += 5;
+	}
 }
 
 void
-dec_pntr(void)
+bfops_closeloop(void)
 {
-	if (curr_pnt - cell_arr)
-		curr_pnt--;
-	else
-	{
-		printf("[ERROR] Attempt to go to cell #-1\n");
-		exit(EXIT_FAILURE);
+	if (*currentcell == 0) {
+		--seektop;
+		return;
 	}
+
+	fseek(bffp, seekstack[seektop - 1], SEEK_SET);
 }
