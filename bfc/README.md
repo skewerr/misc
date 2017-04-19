@@ -1,4 +1,4 @@
-# bfck-c
+# bfc
 
 A [Brainfuck](https://esolangs.org/wiki/brainfuck) interpreter written in C.
 
