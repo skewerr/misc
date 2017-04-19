@@ -34,11 +34,12 @@ main(int argc, char **argv)
 	int op;
 
 	if (argc < 2) {
-		fprintf(stderr, "Not enough arguments.\n");
+		puts("You need to provide a filename.");
 		exit(1);
 	}
-	else if ((bffp = fopen(argv[1], "r")) == NULL) {
-		perror("Could not open file");
+
+	if ((bffp = fopen(argv[1], "r")) == NULL) {
+		perror("Failed to open file");
 		exit(1);
 	}
 
