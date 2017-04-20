@@ -62,14 +62,13 @@ main(int argc, char **argv)
 
 	switch ((op = getopt(argc, argv, "a:d:l")))
 	{
-		case 'a': todo_addline(optarg); break;
-		case 'd': todo_delline(optarg); break;
-		case 'l': todo_list();          break;
-		case  -1: system("todo.sh");    break;
-		case '?':
-			return 1;
-		default:
-			abort();
+		case 'a': todo_addline(optarg); todo_list(); break;
+		case 'd': todo_delline(optarg); todo_list(); break;
+		case 'l': todo_list();                       break;
+		case  -1: system("todo.sh");                 break;
+
+		case '?': return 1;
+		default:  abort();
 	}
 
 	return 0;
