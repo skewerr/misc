@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "weechat-plugin.h"
+#include <weechat/weechat-plugin.h>
+
 #include "misc.h"
 #include "decide.h"
 
@@ -11,6 +12,7 @@
 static const char *choose_delim(void);
 static int compile_list(const char **);
 
+/* gvars */
 static char *c_duplicate; /* global variable => NULL */
 static char *c_result;    /* global variable => NULL */
 

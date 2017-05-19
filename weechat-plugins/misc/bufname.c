@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
-#include "weechat-plugin.h"
+#include <weechat/weechat-plugin.h>
+
 #include "misc.h"
 #include "bufname.h"
 
