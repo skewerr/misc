@@ -25,21 +25,73 @@ hexcodes = { "NOP":     "00"   # no-op
 
 labels = {}
 
+loadops = ["LOAD"]
+
+# regex patterns
+
+negpattern  = re.compile("^\-M\(([0-9a-fA-F]+)\)$")
+abspattern  = re.compile("^\|M\(([0-9a-fA-F]+)\)\|$")
+mempattern  = re.compile("^M\(([0-9a-fA-F]+)\)$")
+negpatternl = re.compile("^\-(.+)$")
+abspatternl = re.compile("^\|(.+)\|$")
+
 # translation
 
 def translate(operation, operand):
 
+    if operation in loadops:
+        return loadtranslate(operand)
+
     return directtranslate(operation, operand)
+
+def loadtranslate(operand):
+
+    if operand.startswith("MQ"):
+        return loadmqtranslate(operand)
+
+    absmatch = abspattern.match(operand)
+    negmatch = negpattern.match(operand)
+    memmatch = mempattern.match(operand)
+
+    if absmatch: return hexcodes["LOADABS"] + " " + absmatch.group(1)
+    if negmatch: return hexcodes["LOADNEG"] + " " + negmatch.group(1)
+    if memmatch: return hexcodes["LOADMEM"] + " " + memmatch.group(1)
+
+    absmatch = abspatternl.match(operand)
+    negmatch = negpatternl.match(operand)
+
+    operand = absmatch.group(1) if absmatch else \
+              negmatch.group(1) if negmatch else \
+              operand
+
+    operation = "LOADABS" if absmatch else \
+                "LOADNEG" if negmatch else \
+                "LOADMEM"
+
+    return "{} {:03X}".format(hexcodes[operation], getlabel(operand)[0])
+
+def loadmqtranslate(operand):
+
+    if operand == "MQ":
+        return hexcodes["LOADMQ"] + " 000"
+
+    operand = operand[operand.find(",")+1:].strip()
+    match   = mempattern.match(operand)
+
+    if match:
+        return hexcodes["LOADMQM"] + " " + match.group(1)
+
+    return "{} {:03X}".format(hexcodes["LOADMQM"], getlabel(operand)[0])
 
 def directtranslate(operation, operand):
 
     try:
         return "{} {}".format(hexcodes[operation], operand)
     except KeyError:
-        print("Instruction not recognized: `", operation, "'.", file=sys.stderr)
+        print("Instruction not recognized:", operation, file=sys.stderr)
         raise SystemExit
 
-# lines manipulation
+# labels
 
 def collectlabels(lines):
 
@@ -58,6 +110,16 @@ def collectlabels(lines):
         address += 0.5
 
     return noemptylines(lines)
+
+def getlabel(label):
+
+    if label not in labels:
+        print("Unknown label:", label, file=sys.stderr)
+        raise SystemExit
+
+    return labels[label]
+
+# lines manipulation
 
 def filtercomments(lines):
 
