@@ -13,7 +13,7 @@ anything related to assembler code(compilers? I dunno).
 
 Alas, I will attempt to complete this with width annotations and whatnot. Expect
 a link to an online version of this assembler in the future as I plan to email
-the teacer suggesting he let his future students use it.
+the teacher suggesting he let his future students use it.
 
 For the time being only direct translation of the operations, as stipulated by
 the `hexcodes` dictionary in `iasop.py`, is supported. If it is still the case
