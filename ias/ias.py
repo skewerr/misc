@@ -6,6 +6,8 @@ import iasop
 with open(sys.argv[1], "r") as asmfile:
     asmlines = iasop.filtercomments(asmfile.readlines())
 
+asmlines = iasop.collectlabels(asmlines)
+
 if len(asmlines) % 2:
     asmlines.append("NOP")
 

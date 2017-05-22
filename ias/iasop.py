@@ -1,4 +1,5 @@
 import sys
+import re
 
 hexcodes = { "NOP":     "00"   # no-op
            , "LOADMEM": "01"   # load from memory
@@ -22,9 +23,15 @@ hexcodes = { "NOP":     "00"   # no-op
            , "RSH":     "15"   # shift bits to the right
            , "STORMEM": "21" } # store value in memory
 
+labels = {}
+
 # translation
 
 def translate(operation, operand):
+
+    return directtranslate(operation, operand)
+
+def directtranslate(operation, operand):
 
     try:
         return "{} {}".format(hexcodes[operation], operand)
@@ -33,6 +40,24 @@ def translate(operation, operand):
         raise SystemExit
 
 # lines manipulation
+
+def collectlabels(lines):
+
+    address = 0x000
+
+    for i, line in enumerate(lines):
+        label = line.split()[0]
+
+        if label.endswith(":"):
+            labels[label[:-1]] = (int(address), bool(address % 1))
+            lines[i] = (line.split(maxsplit=1) + [""])[1]
+
+            if lines[i] == "":
+                continue
+
+        address += 0.5
+
+    return noemptylines(lines)
 
 def filtercomments(lines):
 
