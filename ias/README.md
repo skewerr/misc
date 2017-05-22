@@ -9,7 +9,7 @@ It was started as an attempt to minimize my work in a Computer Architecture
 class, when the teacher assigned us to write programs for the aforementioned IAS
 machine simulator. I also thought it would be good practice for any future
 assignments in the Computer Science course that involved string manipulation or
-anything related to assembler code(compilers? I dunno).
+anything related to assembler code.
 
 Alas, I will attempt to complete this with width annotations and whatnot. Expect
 a link to an online version of this assembler in the future as I plan to email
