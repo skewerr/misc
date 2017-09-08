@@ -1,0 +1,4 @@
+	LOAD M(000)
+	ADD  M(001)
+	NOP
+	LOAD M(0FF)
